@@ -17,36 +17,40 @@ class Journey < ApplicationRecord
   validates :start_point_y, presence: true
   validates :starts_at, presence: true
 
+  validates :end_point_x, presence: true, on: :update
+  validates :end_point_y, presence: true, on: :update
+  validates :ends_at, presence: true, on: :update
+
   #### Callbacks #######################
   after_update :relocate_cab
 
   # 1. Complete a journey, set cab free.
   # 2. Calculate price and stuff.
-  def complete!(point_x:, point_y:, ends_at: Time.now)
-    update(end_point_x: point_x, end_point_y: point_y, ends_at: ends_at)
+  def complete!(x:, y:, ends_at: Time.now)
+    update(end_point_x: x, end_point_y: y, ends_at: ends_at)
   end
 
-  def billing_amount
-    (cost_per_km + cost_per_minute + cost_per_preference)
+  def cost
+    completed? ? (cost_per_km + cost_per_minute + cost_per_preference) : 0
   end
 
   def cost_per_km
-    displacement(end_point_x, start_point_x, end_point_y, start_point_y) * TIME_COST if accountable?
+    completed? ? displacement(end_point_x, start_point_x, end_point_y, start_point_y) * DISPLACEMENT_COST : 0
   end
 
   def cost_per_minute
-    duration * DISPLACEMENT_COST if accountable?
+    completed? ? duration * TIME_COST : 0
   end
 
   def duration
-    ((ends_at - starts_at) * 24 * 60).to_i if accountable?
+    completed? ? ((ends_at - starts_at) / 1.minute).round : 0
   end
 
   def cost_per_preference
-    cab.kind_of_pink? ? KIND_COST : 0 if accountable?
+    completed? ? (cab.kind_of_pink? ? KIND_COST : 0) : 0
   end
 
-  def accountable?
+  def completed?
     not ends_at.nil?
   end
 

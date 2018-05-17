@@ -9,14 +9,24 @@ class Customer < ApplicationRecord
   #### Callbacks #######################
   has_secure_token
 
+  scope :available, -> {includes(:journeys).where('journeys.id' => nil).or(includes(:journeys).where.not('journeys.ends_at' => nil))}
+  scope :unavailable, -> {includes(:journeys).where('journeys.ends_at' => nil)}
+
+
   # 1. From the list of available cab's look in for the one which is at the nearest (by pythagoras theorem approach of distance calculation)
   # 2. If found one, then create a journey with it and return else return nil
-  def book_a_cab_at(x:, y:, kind: nil)
-    cab, duration = Cab.available.where(kind: kind).map do |cab|
-      [cab, distance(cab.position_x, x, cab.position_y, y)]
-    end.sort {|dist_x, dist_y| dist_x[1] <=> dist_y[1]}.first
+  def get_a_cab_at(x:, y:, kind: nil)
 
-    cab.journeys.create(customer: self, start_point_x: x, start_point_y: y, starts_at: Time.now) if cab # pessimistic lock
+    cab = Cab.find_cab_for(x: x, y: y, kind: kind)
+    journey = nil
+    Customer.transaction do
+      cab.with_lock do
+        journey = journeys.create(cab: cab, start_point_x: x, start_point_y: y, starts_at: Time.now)
+      end
+    end if cab
+
+    journey
   end
+
 
 end

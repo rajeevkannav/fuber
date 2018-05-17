@@ -15,8 +15,3 @@ end
 20.times do |i|
   cab = Cab.create(position_x: rand(11...76), position_y: rand(11...76), kind: COLOR_KIND.sample)
 end
-
-customer = Customer.take
-journey = customer.book_a_cab_at(x: 22, y: 22, kind: COLOR_KIND.sample)
-journey.complete!(point_x: 44, point_y: 44, ends_at: Time.now + 5.minutes)
-
