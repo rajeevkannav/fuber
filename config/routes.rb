@@ -5,7 +5,7 @@ Rails.application.routes.draw do
       post 'book'
     end
     member do
-      post 'complete'
+      patch 'complete'
     end
   end
 

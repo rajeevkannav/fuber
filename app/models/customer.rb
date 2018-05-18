@@ -1,8 +1,5 @@
 class Customer < ApplicationRecord
 
-  #### Concerns ########################
-  include DisplacementCalculator
-
   #### Associations ####################
   has_many :journeys
 

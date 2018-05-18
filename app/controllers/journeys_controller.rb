@@ -1,7 +1,6 @@
 class JourneysController < ApplicationController
 
   #### Before action callbacks #########
-  skip_before_action :verify_authenticity_token, only: [:book, :complete]
   before_action :authenticate_available_customer, only: [:book]
   before_action :authenticate_unavailable_customer, only: [:complete]
   before_action :set_journey, only: [:complete]
