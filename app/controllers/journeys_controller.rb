@@ -1,6 +1,7 @@
 class JourneysController < ApplicationController
 
   #### Before action callbacks #########
+  skip_before_action :verify_authenticity_token, if: :json_request?
   before_action :authenticate_available_customer, only: [:book]
   before_action :authenticate_unavailable_customer, only: [:complete]
   before_action :set_journey, only: [:complete]
@@ -27,8 +28,6 @@ class JourneysController < ApplicationController
     @journey = @customer.journeys.find(params[:id])
   end
 
-  protected
-
   def authenticate_available_customer
     authenticate_or_request_with_http_token('Application', 'Either customer does not exists or on journey.') do |token, options|
       @customer = Customer.available.find_by(token: token)
@@ -39,6 +38,10 @@ class JourneysController < ApplicationController
     authenticate_or_request_with_http_token('Application', 'Either customer does not exists or not on journey.') do |token, options|
       @customer = Customer.unavailable.find_by(token: token)
     end
+  end
+
+  def json_request?
+    request.format.json?
   end
 
 end

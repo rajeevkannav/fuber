@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180517053417) do
+ActiveRecord::Schema.define(version: 2018_05_17_053417) do
 
   create_table "cabs", force: :cascade do |t|
     t.float "position_x"

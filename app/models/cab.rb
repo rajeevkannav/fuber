@@ -17,7 +17,7 @@ class Cab < ApplicationRecord
   end
 
   def self.find_cab_for(x:, y:, kind: nil)
-    cab, duration = Cab.available.where(kind: kind).map do |cab|
+    cab, displacement = Cab.available.where(kind: kind).map do |cab|
       [cab, cab.displacement(cab.position_x, x, cab.position_y, y)]
     end.sort {|dist_x, dist_y| dist_x[1] <=> dist_y[1]}.first
     cab

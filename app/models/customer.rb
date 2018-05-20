@@ -1,12 +1,14 @@
 class Customer < ApplicationRecord
 
   #### Associations ####################
-  has_many :journeys
+  has_many :journeys, inverse_of: :customer
 
   #### Callbacks #######################
   has_secure_token
 
+  # Customer considered as available till, he or she is must not in such journey which has only ends_at nil.
   scope :available, -> {includes(:journeys).where('journeys.id' => nil).or(includes(:journeys).where.not('journeys.ends_at' => nil))}
+  # Customer considered as unavailable till, he or she is must in such journey which has only ends_at nil.
   scope :unavailable, -> {includes(:journeys).where('journeys.ends_at' => nil)}
 
 

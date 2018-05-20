@@ -41,6 +41,9 @@ RSpec.describe Customer, type: :model do
       end
     end
 
+    # Get Closest CAB from throrem
+
+
   end
 
 end
